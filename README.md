@@ -2,7 +2,7 @@
 
 Identify which source sentence a piece of text most likely originated from, using lightweight text similarity metrics. No embeddings or API calls required at runtime — just fast, deterministic string matching that works in the browser or on the server.
 
-Designed for RAG (Retrieval-Augmented Generation) systems that need to trace LLM answers back to their source sentences for citation highlighting, but works for any text provenance task.
+Designed for RAG citation highlighting, contract playbook matching, plagiarism detection, source attribution, and any other text provenance task.
 
 ## Install
 
@@ -54,6 +54,96 @@ results = match(query, candidates)
 # results[0].score -> 0.31
 # results[0].index -> 0
 # results[0].metrics.token_containment -> 0.33
+```
+
+## Example: Contract Playbook Matching
+
+Map a negotiated contract clause back to the closest entry in your playbook.
+
+### TypeScript
+
+```typescript
+import { match } from "text-provenance"
+
+// Playbook: canonical clause templates
+const playbook = [
+  "The total aggregate liability of either party under this agreement shall not exceed the fees paid by the client in the twelve months preceding the claim, excluding liability for breaches of confidentiality or intellectual property infringement.",
+  "Each party shall indemnify and hold harmless the other party from and against any third-party claims arising out of the indemnifying party's breach of its representations, warranties, or obligations under this agreement.",
+  "Either party may terminate this agreement for convenience upon thirty days' prior written notice to the other party, provided that all fees for services rendered through the termination date shall remain due and payable.",
+  "Neither party shall be liable for any failure or delay in performance due to causes beyond its reasonable control, including acts of God, natural disasters, war, terrorism, labor disputes, or governmental actions.",
+]
+
+// A real clause from a negotiated contract — derived from the limitation
+// of liability template but with a $2M cap, added data breach carve-out,
+// and restructured language
+const clause =
+  "Except for liability arising from data breaches, breaches of confidentiality, " +
+  "or infringement of intellectual property rights, the total cumulative liability " +
+  "of the vendor under this agreement shall in no event exceed two million dollars " +
+  "($2,000,000) or the aggregate fees paid during the twelve-month period " +
+  "immediately preceding the event giving rise to such liability, whichever is greater."
+
+const results = match(clause, playbook)
+
+console.log(results[0].index)    // 0 (limitation of liability)
+console.log(results[0].score)    // 0.35
+console.log(results[0].metrics)
+// {
+//   tokenContainment: 0.44,
+//   charNgramJaccard: 0.35,
+//   quoteBonus: 0,
+//   sentenceContainment: 0.71,
+//   lcsRatio: 0.27,
+// }
+```
+
+### Python
+
+```python
+from text_provenance import match
+
+playbook = [
+    "The total aggregate liability of either party under this agreement shall not exceed the fees paid by the client in the twelve months preceding the claim, excluding liability for breaches of confidentiality or intellectual property infringement.",
+    "Each party shall indemnify and hold harmless the other party from and against any third-party claims arising out of the indemnifying party's breach of its representations, warranties, or obligations under this agreement.",
+    "Either party may terminate this agreement for convenience upon thirty days' prior written notice to the other party, provided that all fees for services rendered through the termination date shall remain due and payable.",
+    "Neither party shall be liable for any failure or delay in performance due to causes beyond its reasonable control, including acts of God, natural disasters, war, terrorism, labor disputes, or governmental actions.",
+]
+
+clause = (
+    "Except for liability arising from data breaches, breaches of confidentiality, "
+    "or infringement of intellectual property rights, the total cumulative liability "
+    "of the vendor under this agreement shall in no event exceed two million dollars "
+    "($2,000,000) or the aggregate fees paid during the twelve-month period "
+    "immediately preceding the event giving rise to such liability, whichever is greater."
+)
+
+results = match(clause, playbook)
+
+print(results[0].index)                      # 0 (limitation of liability)
+print(f"{results[0].score:.2f}")             # 0.35
+print(results[0].metrics.token_containment)  # 0.44
+print(results[0].metrics.char_ngram_jaccard) # 0.35
+```
+
+### Notes on contract playbook matching
+
+The default weights were tuned on legal text (international tribunal opinions), so they work well for contracts out of the box — both domains share vocabulary patterns like "liability", "indemnify", "shall not exceed", and "arising out of".
+
+For best results on a specific contract corpus, use the Python `optimize_weights()` with labelled clause-playbook pairs to find domain-optimal weights.
+
+`sentenceContainment` (default weight 0) may be worth re-enabling for playbook matching. Contract clauses are often longer than their playbook entry, so measuring what fraction of the playbook entry's tokens appear in the clause can be a useful signal. Pass custom weights to experiment:
+
+```python
+results = match(clause, playbook, weights={"sentence_containment": 0.15, "token_containment": 0.30, "char_ngram_jaccard": 0.45, "quote_bonus": 0.10})
+```
+
+You can also pass custom stopwords to filter boilerplate phrases that inflate similarity across unrelated clauses:
+
+```python
+from text_provenance import token_containment, DEFAULT_STOPWORDS
+
+contract_stopwords = DEFAULT_STOPWORDS | {"notwithstanding", "anything", "contrary", "fullest", "extent", "permitted", "law", "herein", "hereof", "thereof", "hereby"}
+score = token_containment(clause, playbook[0], stopwords=contract_stopwords)
 ```
 
 ## API Reference
