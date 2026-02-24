@@ -1,0 +1,20 @@
+{
+  "name": "text-provenance",
+  "version": "0.1.0",
+  "description": "Identify which source sentence a piece of text most likely originated from, using lightweight text similarity metrics.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": ["text-similarity", "provenance", "sentence-matching", "fuzzy-matching", "nlp"],
+  "author": "yuch85",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "vitest": "^3.0.0"
+  }
+}

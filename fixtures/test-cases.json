@@ -1,0 +1,113 @@
+[
+  {
+    "name": "direct-quotation",
+    "query": "The regulation states that \"all emissions from industrial facilities must be reported quarterly to the designated authority\" which establishes a clear reporting obligation.",
+    "candidates": [
+      "All emissions from industrial facilities must be reported quarterly to the designated authority, as specified in Section 12 of the Environmental Reporting Act.",
+      "Industrial facilities have various obligations under environmental law, including maintaining records of their operations.",
+      "The quarterly reporting cycle was established to align with fiscal year reporting periods used by most government agencies."
+    ],
+    "expected_top_index": 0,
+    "description": "Query directly quotes candidate 0; quote bonus and high Jaccard should push it to top."
+  },
+  {
+    "name": "light-paraphrase",
+    "query": "The court found that commanders who knew about crimes committed by their subordinates but failed to take action could be held criminally responsible.",
+    "candidates": [
+      "A superior who has knowledge of offences committed by persons under his command and fails to take necessary measures to prevent or punish such acts shall be criminally liable.",
+      "The jurisdiction of the court extends to natural persons pursuant to the provisions of the present statute.",
+      "Witness testimony shall be given orally unless the court permits a written statement to be submitted."
+    ],
+    "expected_top_index": 0,
+    "description": "Query paraphrases candidate 0 with minor wording changes; token containment and Jaccard should identify it."
+  },
+  {
+    "name": "heavy-paraphrase",
+    "query": "Countries must work together and share information to address the global warming crisis, especially helping poorer nations build capacity.",
+    "candidates": [
+      "States shall cooperate in a spirit of global partnership to conserve, protect and restore the health and integrity of the Earth's ecosystem, with developed countries acknowledging their responsibility and providing financial and technical assistance to developing nations.",
+      "The measurement of greenhouse gas concentrations in the atmosphere requires sophisticated monitoring equipment deployed at multiple stations worldwide.",
+      "Trade agreements between nations should include provisions for environmental impact assessments before major infrastructure projects are approved."
+    ],
+    "expected_top_index": 0,
+    "description": "Heavy paraphrase: same meaning but very different wording. Tests character n-gram overlap on shared stems."
+  },
+  {
+    "name": "vocabulary-overlap-false-positive",
+    "query": "The environmental impact assessment must evaluate water quality before the construction project begins.",
+    "candidates": [
+      "Water quality standards vary significantly between jurisdictions, with some countries adopting WHO guidelines while others maintain their own regulatory frameworks for acceptable pollutant levels.",
+      "Before initiating any construction activity in a protected zone, the developer must submit a comprehensive environmental impact assessment to the relevant competent authority for review.",
+      "The project timeline indicates that construction will begin in the third quarter, pending approval of all necessary permits and clearances."
+    ],
+    "expected_top_index": 1,
+    "description": "Candidate 0 shares 'water quality' but is about standards. Candidate 1 shares the procedural meaning. Tests that containment correctly weights directional overlap."
+  },
+  {
+    "name": "multi-sentence-synthesis",
+    "query": "The tribunal established that both intent and knowledge are required elements, with the perpetrator needing to have acted deliberately while understanding the broader context of systematic attacks.",
+    "candidates": [
+      "The mens rea element requires proof that the accused acted with intent, meaning a deliberate and conscious decision to engage in the prohibited conduct.",
+      "Knowledge of the broader context is established when the perpetrator is aware that there is an attack directed against a civilian population.",
+      "Systematic attacks are distinguished from random acts of violence by their organized nature and the existence of a pattern or plan.",
+      "The tribunal heard testimony from seventeen witnesses over the course of three weeks during the prosecution's case."
+    ],
+    "expected_top_index": null,
+    "description": "Query synthesizes across candidates 0, 1, and 2. No single candidate should score dominantly higher than the others."
+  },
+  {
+    "name": "short-query-long-candidate",
+    "query": "due diligence obligation",
+    "candidates": [
+      "The principle of due diligence in international environmental law requires States to take all appropriate measures within their power to prevent significant transboundary harm, including conducting environmental impact assessments, monitoring activities within their jurisdiction, and cooperating with potentially affected States. This obligation is one of conduct rather than result, meaning that States are not held to an absolute standard but must demonstrate reasonable efforts proportionate to the risk involved.",
+      "The procedural rights of the accused include the right to counsel, the right to examine witnesses, and the right to adequate time for preparation of the defence.",
+      "Treaty interpretation follows the general rules set forth in the Vienna Convention on the Law of Treaties."
+    ],
+    "expected_top_index": 0,
+    "description": "Very short query against long candidate. Answer containment should be high for candidate 0 since all query tokens appear in it."
+  },
+  {
+    "name": "long-query-short-candidate",
+    "query": "The advisory opinion extensively analyzed the obligation of States to exercise due diligence in preventing transboundary environmental harm, concluding that this duty requires continuous monitoring, assessment, and notification of potential risks to other States and the international community as a whole.",
+    "candidates": [
+      "States must exercise due diligence to prevent transboundary harm.",
+      "The Court rendered its advisory opinion on 15 January after extensive deliberations lasting several months.",
+      "Maritime boundaries are determined according to equitable principles taking into account all relevant circumstances."
+    ],
+    "expected_top_index": 0,
+    "description": "Long query, short candidate 0. Sentence containment would score high (all of candidate 0's tokens appear in query) but answer containment will be low. Jaccard should still rank it first."
+  },
+  {
+    "name": "ellipsis-quotation",
+    "query": "The treaty requires \"all parties to reduce emissions... in accordance with their respective capabilities and national circumstances\" establishing differentiated obligations.",
+    "candidates": [
+      "All parties to reduce emissions of greenhouse gases in a manner that reflects equity and in accordance with their respective capabilities and national circumstances, while ensuring that food production is not threatened.",
+      "The protocol established binding emission reduction targets for developed countries listed in Annex I.",
+      "National communications shall be submitted every four years and shall include a description of steps taken to implement the convention."
+    ],
+    "expected_top_index": 0,
+    "description": "Query quotes candidate 0 with ellipsis truncation. Tests ellipsis-aware quote matching."
+  },
+  {
+    "name": "no-match-expected",
+    "query": "The prosecutor argued that the evidence was insufficient to establish criminal liability beyond a reasonable doubt.",
+    "candidates": [
+      "Agricultural subsidies distort international trade and disproportionately affect developing countries that rely on commodity exports.",
+      "The architectural design of the new courthouse incorporates energy-efficient systems and sustainable building materials.",
+      "Modern database systems use indexing and query optimization to efficiently retrieve records from large datasets."
+    ],
+    "expected_top_index": null,
+    "description": "Query is legal text but candidates are from completely unrelated domains. No candidate should score above threshold."
+  },
+  {
+    "name": "morphological-overlap",
+    "query": "The criminalization of certain acts demonstrates the international community's commitment to accountability.",
+    "candidates": [
+      "Criminal acts under international law include genocide, crimes against humanity, and war crimes, reflecting a commitment by the international community to hold individuals accountable for the most serious violations.",
+      "The administrative procedures for filing complaints have been streamlined to improve efficiency.",
+      "Community participation in local governance strengthens democratic institutions and promotes transparency."
+    ],
+    "expected_top_index": 0,
+    "description": "Tests morphological overlap: 'criminalization'/'criminal', 'accountability'/'accountable', 'community'/'community'. Character n-gram Jaccard should capture these stem overlaps."
+  }
+]

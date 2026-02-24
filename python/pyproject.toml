@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "text-provenance"
+version = "0.1.0"
+description = "Identify which source sentence a piece of text most likely originated from, using lightweight text similarity metrics."
+readme = {content-type = "text/markdown", text = "See https://github.com/yuch85/text-provenance for documentation."}
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "yuch85" }]
+keywords = ["text-similarity", "provenance", "sentence-matching", "fuzzy-matching", "nlp"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Text Processing :: Linguistic",
+]
+
+[project.optional-dependencies]
+optimizer = ["numpy", "requests"]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
